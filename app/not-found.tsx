@@ -1,6 +1,6 @@
 import Link from 'next/link';
 
-/** Static 404 page for output: 'export'. Must not use dynamic APIs. */
+/** Static 404 page for output: 'export'. Mut not use dynamic APIs. */
 export default function NotFound() {
   return (
     <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4 px-4">
