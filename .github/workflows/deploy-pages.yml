@@ -1,0 +1,61 @@
+# Build Next.js static export and deploy to GitHub Pages
+# Docs: https://docs.github.com/en/pages
+
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: ['main']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: 'pages'
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    env:
+      # User/org site (repo name *.github.io): base path ''. Project site: base path '/repo-name'
+      BASE_PATH: ${{ contains(github.event.repository.name, '.github.io') && '' || format('/{0}', github.event.repository.name) }}
+      NEXT_PUBLIC_CONTENTSTACK_API_KEY: ${{ secrets.NEXT_PUBLIC_CONTENTSTACK_API_KEY }}
+      NEXT_PUBLIC_CONTENTSTACK_DELIVERY_TOKEN: ${{ secrets.NEXT_PUBLIC_CONTENTSTACK_DELIVERY_TOKEN }}
+      NEXT_PUBLIC_CONTENTSTACK_ENVIRONMENT: ${{ secrets.NEXT_PUBLIC_CONTENTSTACK_ENVIRONMENT }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci || npm install
+
+      - name: Build
+        run: npm run build
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: frontend/out
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: github-pages
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deploy
+        uses: actions/deploy-pages@v4
