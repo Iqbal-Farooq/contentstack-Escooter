@@ -73,9 +73,9 @@ export default async function HomePage() {
         }
       })}
       <SubscribeNewsletter />
-      {result?.raw != null && (
+      {/* {result?.raw != null && (
         <ApiDataPrint data={result.raw} title="Contentstack API data (raw)" />
-      )}
+      )} */}
     </>
   );
 }
