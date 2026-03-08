@@ -20,9 +20,10 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    # Repo root = frontend (workflow lives in .github/workflows). No working-directory needed.
     defaults:
       run:
-        working-directory: frontend
+        working-directory: .
     env:
       # User/org site (repo name *.github.io): base path ''. Project site: base path '/repo-name'
       BASE_PATH: ${{ contains(github.event.repository.name, '.github.io') && '' || format('/{0}', github.event.repository.name) }}
@@ -37,8 +38,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
+          # Path relative to repo root. Use package-lock.json when repo is frontend-only.
           cache: 'npm'
-          cache-dependency-path: frontend/package-lock.json
+          cache-dependency-path: package-lock.json
 
       - name: Install dependencies
         run: npm ci || npm install
@@ -49,7 +51,7 @@ jobs:
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: frontend/out
+          path: out
 
   deploy:
     needs: build
