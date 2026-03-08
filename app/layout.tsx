@@ -12,8 +12,8 @@ export const metadata: Metadata = {
   description: 'Production-ready Next.js app with Contentstack headless CMS.',
 };
 
-// Fetch fresh header every time (no layout cache) so Contentstack updates are visible
-export const dynamic = 'force-dynamic';
+// Required for output: 'export' (GitHub Pages). All pages must be statically generated.
+export const dynamic = 'force-static';
 
 export default async function RootLayout({
   children,
